@@ -91,22 +91,8 @@ function showFeedbackMessage( msg ) {
     feedbackMessage.fadeIn( 300 );
 }
 
-function testPorts() {
-    var IP = inputIP.val();
-    var rangeStart = parseInt( inputRangeStart.val() );
-    var rangeEnd = parseInt( inputRangeEnd.val() );
-    var currentResponse = rangeStart;
-
-    if ( IP.length < 4 ) {
-        alert( "Check the IP value." );
-    }
-
-    if ( isNaN( rangeStart ) || isNaN( rangeEnd ) || ! ( rangeStart <= rangeEnd ) ) {
-        alert( "Check the range start and range end values." );
-        return;
-    }
-
-    buttonTest.addClass( "disabled" );
+function testIPPorts( IP, rangeStart, rangeEnd ) {
+    var responseIndex = rangeStart;
 
     if ( checkboxClearTable.is( ":checked" ) ) {
         resultsTable.find( "tbody tr" ).remove();
@@ -129,9 +115,9 @@ function testPorts() {
                     $( "#results-table-container" ).scrollTop( 999999999 );
                 }
 
-                currentResponse++;
+                responseIndex++;
 
-                if ( currentResponse >= rangeEnd ) {
+                if ( responseIndex >= rangeEnd ) {
                     buttonTest.removeClass( "disabled" );
                     showFeedbackMessage( "Done testing" );
                 }
@@ -139,11 +125,32 @@ function testPorts() {
         } );
     }
 
-    showFeedbackMessage( "Initializing" );
-
     while( rangeStart <= rangeEnd ) {
         testPort( rangeStart );
         rangeStart++;
+    }
+}
+
+function testPorts() {
+    var IPs = inputIP.val().split( "," );
+    var rangeStart = parseInt( inputRangeStart.val() );
+    var rangeEnd = parseInt( inputRangeEnd.val() );
+
+    if ( ! IPs.length ) {
+        alert( "Check the IP value." );
+    }
+
+    if ( isNaN( rangeStart ) || isNaN( rangeEnd ) || ! ( rangeStart <= rangeEnd ) ) {
+        alert( "Check the range start and range end values." );
+        return;
+    }
+
+    buttonTest.addClass( "disabled" );
+    showFeedbackMessage( "Initializing" );
+
+    for( var i = 0; i < IPs.length; i++ ) {
+        var IP = IPs[ i ].replace( /^\s+|\s+$|:\d+$/g, "" );
+        testIPPorts( IP, rangeStart, rangeEnd );
     }
 }
         </script>
