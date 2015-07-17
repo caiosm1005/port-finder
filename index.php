@@ -92,8 +92,6 @@ function showFeedbackMessage( msg ) {
 }
 
 function testIPPorts( IP, rangeStart, rangeEnd ) {
-    var responseIndex = rangeStart;
-
     if ( checkboxClearTable.is( ":checked" ) ) {
         resultsTable.find( "tbody tr" ).remove();
     }
@@ -102,7 +100,7 @@ function testIPPorts( IP, rangeStart, rangeEnd ) {
         $.ajax( ".", {
             data: { IP: IP, port: portNumber },
             complete: function( response ) {
-                showFeedbackMessage( "Tested port " + portNumber );
+                showFeedbackMessage( "Tested " + IP + ":" + portNumber );
 
                 // Add row to results table
                 if ( response.responseText == "1" ) {
@@ -113,13 +111,6 @@ function testIPPorts( IP, rangeStart, rangeEnd ) {
                     resultsTable.find( "#initial-message" ).remove();
                     resultsTable.find( "tbody" ).append( resultRow );
                     $( "#results-table-container" ).scrollTop( 999999999 );
-                }
-
-                responseIndex++;
-
-                if ( responseIndex >= rangeEnd ) {
-                    buttonTest.removeClass( "disabled" );
-                    showFeedbackMessage( "Done testing" );
                 }
             }
         } );
@@ -145,8 +136,9 @@ function testPorts() {
         return;
     }
 
-    buttonTest.addClass( "disabled" );
     showFeedbackMessage( "Initializing" );
+    buttonTest.addClass( "disabled" );
+    setTimeout( function() { buttonTest.removeClass( "disabled" ); }, 1000 );
 
     for( var i = 0; i < IPs.length; i++ ) {
         var IP = IPs[ i ].replace( /^\s+|\s+$|:\d+$/g, "" );
